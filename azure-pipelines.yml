@@ -1,0 +1,30 @@
+
+trigger:
+- main
+pr:
+- main
+
+pool:
+  vmImage: 'ubuntu-latest'
+
+steps:
+- checkout: self
+  displayName: 'Checkout'
+
+- task: UsePythonVersion@0
+  inputs:
+    versionSpec: '3.11'
+
+- script: |
+    python -m pip install --upgrade pip setuptools
+    pip install -e .
+  displayName: 'Install greenlint (editable)'
+
+- script: |
+    greenlint . --json greenlint_report.json
+  displayName: 'Run greenlint'
+
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: 'greenlint_report.json'
+    ArtifactName: 'greenlint-report'

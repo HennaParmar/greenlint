@@ -1,0 +1,22 @@
+
+name: GreenLint
+on:
+  push: { branches: [ main ] }
+  pull_request: { branches: [ main ] }
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - run: |
+          python -m pip install --upgrade pip setuptools
+          pip install -e .
+      - run: greenlint . --json greenlint_report.json
+      - uses: actions/upload-artifact@v4
+        with:
+          name: greenlint-report
+          path: greenlint_report.json
