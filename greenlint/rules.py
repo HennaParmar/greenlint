@@ -85,4 +85,126 @@ class ExcessiveLogging(RuleBase):
         Visitor().visit(tree)
         return findings
 
-ALL_RULES = [InefficientMembershipCheck(), UnbatchedRequests(), ExcessiveLogging()]
+# === AI Sustainability Rules ===
+
+import os
+
+class LargeModelFile(RuleBase):
+    id = "AI001"
+    description = "Model file exceeds recommended sustainable size (>500MB)"
+
+    def check(self, file_path, tree=None):
+        findings = []
+        if file_path.endswith((".pt", ".pth", ".h5", ".onnx", ".joblib", ".pickle")):
+            size_mb = os.path.getsize(file_path) / (1024 * 1024)
+            if size_mb > 500:
+                findings.append(Finding(
+                    file_path,
+                    0,
+                    self.id,
+                    f"Model file size {size_mb:.1f}MB — consider pruning or quantizing to reduce footprint."
+                ))
+        return findings
+
+
+class TrainFromScratch(RuleBase):
+    id = "AI002"
+    description = "Training model from scratch — consider transfer learning or fine-tuning pre-trained models"
+
+    def check(self, file_path, tree):
+        findings = []
+        class Visitor(ast.NodeVisitor):
+            def visit_Call(self, node):
+                if isinstance(node.func, ast.Attribute):
+                    name = node.func.attr.lower()
+                    if name in {"fit", "train"}:
+                        findings.append(Finding(
+                            file_path,
+                            node.lineno,
+                            "AI002",
+                            "Detected model training call — check if using pre-trained weights to reduce compute."
+                        ))
+                self.generic_visit(node)
+        Visitor().visit(tree)
+        return findings
+    
+class PandasRowWiseOps(RuleBase):
+    id = "PD001"
+    description = "Row-wise pandas operations detected; prefer vectorisation"
+
+    def check(self, file_path, tree):
+        findings = []
+        rule_id = self.id  # capture for inner class
+
+        class V(ast.NodeVisitor):
+            def visit_Call(self, node):
+                # df.apply(..., axis=1) or df.iterrows()
+                if isinstance(node.func, ast.Attribute):
+                    attr = node.func.attr
+
+                    # df.apply(..., axis=1)
+                    if attr == "apply":
+                        for kw in (node.keywords or []):
+                            try:
+                                if kw.arg == "axis" and getattr(kw.value, "value", None) == 1:
+                                    findings.append(Finding(
+                                        file_path, node.lineno, rule_id,
+                                        "pandas apply(axis=1) is slow; prefer vectorised ops."
+                                    ))
+                            except Exception:
+                                pass
+
+                    # df.iterrows()
+                    if attr == "iterrows":
+                        findings.append(Finding(
+                            file_path, node.lineno, rule_id,
+                            "pandas iterrows() is slow; prefer vectorised ops."
+                        ))
+                self.generic_visit(node)
+
+        V().visit(tree)
+        return findings
+
+
+class LargeFileIoInLoop(RuleBase):
+    id = "IO001"
+    description = "Potential large file I/O inside loop; use chunking/buffering"
+
+    def check(self, file_path, tree):
+        findings = []
+        rule_id = self.id  # capture for inner class
+        suspicious_funcs = {"read_csv", "read_json", "open"}
+
+        class V(ast.NodeVisitor):
+            def visit_For(self, node):
+                for n in ast.walk(node):
+                    if isinstance(n, ast.Call):
+                        name = None
+                        try:
+                            if isinstance(n.func, ast.Attribute):
+                                name = n.func.attr
+                            elif isinstance(n.func, ast.Name):
+                                name = n.func.id
+                            if name in suspicious_funcs:
+                                findings.append(Finding(
+                                    file_path, getattr(n, "lineno", getattr(node, "lineno", 0)), rule_id,
+                                    "File I/O called inside loop; consider chunked reads or preloading."
+                                ))
+                        except Exception:
+                            pass
+                self.generic_visit(node)
+
+        V().visit(tree)
+        return findings
+
+
+
+ALL_RULES = [
+    InefficientMembershipCheck(),
+    UnbatchedRequests(),
+    ExcessiveLogging(),
+    LargeModelFile(),
+    TrainFromScratch(),
+    PandasRowWiseOps(),
+    LargeFileIoInLoop()
+]
