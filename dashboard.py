@@ -13,6 +13,7 @@ uploads = st.file_uploader("Upload greenlint_report.json file(s)", type="json", 
 
 all_rows = []
 summaries = []
+df = pd.DataFrame()  # Ensure df is always defined
 
 def load_report(fp, name_hint):
     data = json.load(fp)
@@ -202,23 +203,38 @@ def suggest_fix(rule, before_lines):
     return None, "No auto-fix heuristic available; see rule guidance."
 
 # UI: pick a row from the filtered table above
+# Ensure 'filtered' is always defined
+filtered = pd.DataFrame()
 if uploads and not df.empty:
+    # Recompute filtered mask as above
+    rule_sel = st.session_state.get("rule_sel", [])
+    sev_sel = st.session_state.get("sev_sel", [])
+    file_sel = st.session_state.get("file_sel", "")
+    mask = pd.Series([True]*len(df))
+    if rule_sel: mask &= df["rule"].isin(rule_sel)
+    if sev_sel: mask &= df["severity"].isin(sev_sel)
+    if file_sel: mask &= df["file"].str.contains(file_sel, case=False, na=False)
+    filtered = df[mask].sort_values(["report","file","line"]).reset_index(drop=True)
+
     st.markdown("Select a finding row (index from the filtered table) to preview:")
     idx2 = st.number_input("Row index", min_value=0, max_value=max(0, len(filtered)-1), value=0, step=1)
-    row = filtered.iloc[int(idx2)]
-    st.write(f"**Rule:** {row['rule']} — {row['message']}")
-    st.write(f"**File:** `{row['file']}`  |  **Line:** `{row['line']}`")
+    if len(filtered) > 0:
+        row = filtered.iloc[int(idx2)]
+        st.write(f"**Rule:** {row['rule']} — {row['message']}")
+        st.write(f"**File:** `{row['file']}`  |  **Line:** `{row['line']}`")
 
-    ctx, numbered, start = read_context(row["file"], row["line"])
-    if numbered:
-        st.code(numbered, language="python")  # good enough for .py or .java display
+        ctx, numbered, start = read_context(row["file"], row["line"])
+        if numbered:
+            st.code(numbered, language="python")  # good enough for .py or .java display
 
-        after, note = suggest_fix(row["rule"], ctx)
-        st.markdown("**Suggested After:**")
-        if after:
-            # Guess language by extension
-            lang = "java" if str(row["file"]).lower().endswith(".java") else "python"
-            st.code(after, language=lang)
-        st.caption(note)
+            after, note = suggest_fix(row["rule"], ctx)
+            st.markdown("**Suggested After:**")
+            if after:
+                # Guess language by extension
+                lang = "java" if str(row["file"]).lower().endswith(".java") else "python"
+                st.code(after, language=lang)
+            st.caption(note)
+        else:
+            st.info("Could not read local source file. Run the dashboard from the repo root (so relative paths resolve), or copy/paste code here.")
     else:
-        st.info("Could not read local source file. Run the dashboard from the repo root (so relative paths resolve), or copy/paste code here.")
+        st.info("No findings available to preview.")

@@ -1,144 +1,134 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
-GreenLint — Sustainable Coding Linter (PoC)
->>>>>>> fada12d8ad08df1285531d18c92df6843ec2beb0
+🌿 GreenLint — Sustainable Software Analysis Tool
 
+Developed at CGI by Henna Parmar
 
-Prototype linter that flags code patterns likely to waste compute, time, and energy — helping teams write greener software.
+GreenLint helps developers identify energy-intensive or inefficient code patterns and provides actionable guidance for writing greener, more efficient software.
+It aligns with the CGI Green Software Guide principles of measurement, optimisation, and carbon-aware engineering
 
-✨ Features
+green_software_guide
 
-Static analysis for Python with early sustainability heuristics:
+.
 
-PY001: Membership tests in loops → prefer set lookups.
+🧩 What GreenLint Does
 
-PY002: Network requests in loops → batch / parallelise.
+Code Sustainability Scanning — detects inefficient patterns that waste energy or bandwidth.
 
-PY003: Costly string formatting in logging → use lazy logging.
+Multi-Language Support — Python, JavaScript/Node.js, Docker, and data workflows.
 
-Score out of 100 + per-rule counts.
+Actionable Reports — generates a greenlint_report.json compatible with the interactive Streamlit dashboard.
 
-JSON report for CI artifacts and dashboards.
+Lifecycle Integration — runs locally or inside CI/CD (Azure DevOps, GitHub Actions).
 
-Ready-to-use Azure DevOps pipeline; optional GitHub Actions.
+Education & Awareness — shows “before/after” code examples and aligns each finding to CGI’s green-software principles.
 
+🔍 Example Rule Categories
+Area	Example Rule	Purpose
+Efficiency	PY001 – Membership test in loops → use sets	Reduces algorithmic complexity and CPU time.
+Network	GLNET001 – Network calls in loops	Encourages batching / parallelisation to cut idle compute.
+Web	GLWEB001 – Missing compression middleware	Reduces transfer size and energy use.
+Containers	CT001–CT006 – Docker best practices	Promotes minimal images and non-root builds.
+Data & Assets	IMG001 / APIJSON001	Flags large images or JSON payloads to align with the guide’s storage-optimisation principle
+
+green_software_guide
+
+.
+🧠 How It Aligns With the CGI Green Software Guide
+Guide Principle	GreenLint Feature
+1. Measurement	Establishes a sustainability baseline via rule counts & trend dashboard
+
+green_software_guide
+
+.
+2. Efficient Use of Hardware	Encourages reuse and optimisation of compute and memory resources.
+3. Storage Optimisation	Detects large or redundant data assets and uncompressed media.
+4. Carbon-Aware Engineering	Plans CI/CD execution during low-carbon periods (future roadmap).
+5. Energy Efficiency	Flags unnecessary loops, unoptimised assets, and missing caching.
+6. Carbon Efficiency	Promotes containerisation and cloud scalability best practices.
+7. User Carbon Awareness	Provides visual feedback on potential CO₂e savings per fix.
 🚀 Quick Start
-# clone the repo
+# Clone and enter the repo
 git clone https://github.com/HennaParmar/greenlint.git
 cd greenlint
 
-# install in editable mode (gives you the CLI entrypoint)
-pip install --upgrade pip setuptools
-pip install -e .
+# (Optional) create a virtual environment
+python -m venv .venv
+.\.venv\Scripts\activate
 
-<<<<<<< HEAD
-Open the JSON report to see findings, rule counts, and a naive score out of 100.
-=======
-# greenlint
-Prototype linter for sustainable, energy-efficient coding.
->>>>>>> 092d4a6d488f202a454547ec7069235bfdb3a5e1
-=======
-# run against the example file
-greenlint examples/bad_patterns.py --json greenlint_report.json
+# Install dependencies
+pip install -r requirements.txt   # or pip install streamlit pandas
 
+# Run a scan (Python or JS/Docker project)
+python greenlint_js_scanner.py --path . --out greenlint_report.json
 
-On Windows, if greenlint isn’t found on PATH, run:
-
-python -m greenlint.cli examples/bad_patterns.py --json greenlint_report.json
+# Launch the dashboard
+streamlit run dashboard.py
 
 
-Expected output:
+Upload your greenlint_report.json and explore findings, before/after suggestions, and rule trends.
 
-=== GreenLint Prototype ===
-Total findings: 3  |  Score: 94 / 100
-By rule:
-  - PY001: 1
-  - PY002: 1
-  - PY003: 1
+🔄 Integration Example (Azure DevOps)
 
-Detail:
-examples/bad_patterns.py:... PY001 ...
-examples/bad_patterns.py:... PY002 ...
-examples/bad_patterns.py:... PY003 ...
-JSON report written to greenlint_report.json
+GreenLint can run automatically in pipelines:
 
-📁 Project Structure
-greenlint/
-  __init__.py
-  cli.py          # CLI entrypoint
-  rules.py        # rule definitions (PY001–PY003)
-  scanner.py      # walks files, builds AST, applies rules
-  report.py       # scoring + summary
-examples/
-  bad_patterns.py
+- task: UsePythonVersion@0
+  inputs: { versionSpec: '3.11' }
 
-⚙️ Azure DevOps
+- script: |
+    python greenlint_js_scanner.py --path . --out greenlint_report.json
+  displayName: 'Run GreenLint'
 
-The repo includes azure-pipelines.yml. Create a pipeline pointing to this file.
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: greenlint_report.json
+    ArtifactName: greenlint
 
-What it does:
+🛣️ Roadmap — Next Milestones
+Short Term (Q4 2025 – Q1 2026)
 
-Sets up Python 3.11
+Pilot on HMCTS Juror Public Portal project.
 
-Installs the package (pip install -e .)
+Conduct developer user-research interviews to refine rule accuracy and UX.
 
-Runs greenlint on the repo
+Publish initial metrics on code efficiency and carbon reduction.
 
-Publishes greenlint_report.json as a build artifact
+Medium Term (2026)
 
-Optional: add a quality gate step to soft-fail or fail the build based on findings.
+Expand rule library: cloud efficiency, containerisation, and data-pipeline optimisation.
 
-🔧 Pre-commit (local checks)
-pip install pre-commit
-pre-commit install
+Integrate into Azure DevOps / GitHub Actions.
 
+Launch internal CGI Developer Sustainability Community.
 
-This runs GreenLint before each commit to catch issues early.
+Long Term (2026 – 2027)
 
-🧪 Testing
-# run a very small smoke test
-python - << "PY"
-from greenlint.scanner import scan_path
-fs = scan_path("examples/bad_patterns.py")
-print("findings:", len(fs))
-PY
+Add multi-language support (Java, Go, TypeScript).
 
-🗺️ Roadmap
+Implement carbon-aware scheduling and “Greenness Index”.
 
-Config file (greenlint.toml) for include/exclude paths, severities, and thresholds.
+Co-author a CGI × Green Software Foundation white paper.
 
-More rules:
+📈 Future Opportunities
 
-Pandas vectorisation (avoid .apply/row loops)
+Dynamic Measurement: integrate CodeCarbon or DataTwin360 for real-time power estimates
 
-Large file I/O in loops → chunking / buffering
+green_software_guide
 
-N+1 DB queries (simple ORM heuristic)
+.
 
-Excessive JSON (de)serialisation in hot paths
+Storage & Data Lifecycle Audits: automatically detect redundant datasets.
 
-Outputs: SARIF for PR annotations; HTML/Streamlit report.
+User Carbon Awareness: provide dashboard visualisation of CO₂e avoided.
 
-Measured runs: optional CodeCarbon integration for rough energy estimates.
+Procurement Alignment: include supplier-compliance checks following the guide’s green-purchasing criteria
 
-Multi-language: Java/Kotlin via javaparser/OpenRewrite; JS/TS via ESLint plugin.
+green_software_guide
 
-🤝 Contributing
+.
 
-Issues and PRs welcome! For new rules, please include:
+📫 Contact
 
-Rule ID & rationale
-
-Example “bad” and “better” patterns
-
-Tests that trigger the rule
-
-📜 License
-
-MIT — feel free to use, adapt, and improve.
-
-🙌 Acknowledgements
-
-Inspired by emerging Green Software practices (e.g., the Green Software Foundation’s principles) and community efforts to reduce software’s carbon impact.
->>>>>>> fada12d8ad08df1285531d18c92df6843ec2beb0
+Henna Parmar
+Technical Graduate – Government & Justice, CGI
+📧 henna.parmar@cgi.com
+ 📍 London Office
+🔗 github.com/HennaParmar/greenlint
