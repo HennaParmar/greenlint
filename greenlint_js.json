@@ -1,0 +1,371 @@
+{
+  "summary": {
+    "total_findings": 52
+  },
+  "findings": [
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 190,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 190,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 190,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 190,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 190,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 191,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 195,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 302,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 392,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 392,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 392,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 393,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 440,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 440,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 440,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 440,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 443,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 447,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 447,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 448,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 472,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 472,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 500,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 532,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 532,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 532,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 547,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 590,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 590,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 590,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 594,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 598,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 602,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 611,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 611,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 611,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 695,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 710,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 710,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 710,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 710,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 710,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 710,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 712,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 729,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 729,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 740,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 740,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 740,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": ".yarn\\releases\\yarn-3.8.7.cjs",
+      "line": 743,
+      "rule": "GLNET001",
+      "message": "Network call inside loop; prefer batching (Promise.all) or concurrency control.",
+      "severity": "MEDIUM"
+    },
+    {
+      "file": "server\\app.js",
+      "line": 8,
+      "rule": "GLWEB001",
+      "message": "Express app detected without compression middleware; enable gzip/Brotli (e.g., compression()).",
+      "severity": "LOW"
+    },
+    {
+      "file": "server\\config\\express.js",
+      "line": 89,
+      "rule": "GLWEB002",
+      "message": "Static assets served without explicit cache options; set Cache-Control/ETag (e.g., maxAge, etag).",
+      "severity": "LOW"
+    }
+  ]
+}
