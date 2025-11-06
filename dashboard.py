@@ -126,85 +126,16 @@ def suggest_fix(rule, before_lines):
     """
     text = "\n".join(before_lines) if before_lines else ""
 
-    # PY003: logging f-string -> lazy logging
-    if rule == "PY003":
-        # Replace common patterns: logging.debug(f"...{x}") or "...".format(x)
-        lazy = re.sub(
-            r'logging\.(debug|info)\(\s*f?(".*?\{.*?\}".*?)\)',
-            r'logging.\1("...", ...)',  # placeholder
-            text
-        )
-        example_after = dedent('''\
-            # After (lazy logging)
-            logging.debug("Processing record %s", record_id)
-            # or
-            logging.info("User %s logged in", user.name)
-        ''')
-        note = "Use parameterised logging so string formatting only happens when the log level is enabled."
-        return example_after, note
+    from textwrap import dedent
 
-    # PY001: membership in loop -> use set
-    if rule == "PY001":
-        example_after = dedent('''\
-            # After (O(1) membership)
-            s = set(items)
-            for i in items:
-                if i in s:
-                    process(i)
-        ''')
-        note = "Convert to a set once outside the loop for O(1) membership checks."
-        return example_after, note
+    # -------------------- JAVASCRIPT / NODE / EXPRESS --------------------
 
-    # PY002: network in loop -> batch/parallelise
-    if rule == "PY002":
-        example_after = dedent('''\
-            # After (parallel requests)
-            from concurrent.futures import ThreadPoolExecutor
-            import requests
-            with ThreadPoolExecutor(max_workers=8) as ex:
-                responses = list(ex.map(requests.get, urls))
-        ''')
-        note = "Batch or parallelise network calls to reduce wall-time and wasted idle CPU."
-        return example_after, note
-
-    # IO001: file I/O in loop -> chunking/buffering
-    if rule == "IO001":
-        example_after = dedent('''\
-            # After (chunked reading)
-            import pandas as pd
-            for chunk in pd.read_csv("large.csv", chunksize=100_000):
-                handle(chunk)
-        ''')
-        note = "Avoid per-iteration full reads; use chunking or preload once."
-        return example_after, note
-
-    # PD001: pandas row-wise ops -> vectorise
-    if rule == "PD001":
-        example_after = dedent('''\
-            # After (vectorised)
-            # Before: df.apply(lambda r: r["a"] + r["b"], axis=1)
-            df["sum"] = df["a"] + df["b"]
-        ''')
-        note = "Replace row-wise apply/iterrows with vectorised column operations."
-        return example_after, note
-
-    # AI002: training from scratch -> use pre-trained
-    if rule == "AI002":
-        example_after = dedent('''\
-            # After (transfer learning)
-            from transformers import AutoModelForSequenceClassification, AutoTokenizer
-            model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=2)
-            # fine-tune instead of training from scratch
-        ''')
-        note = "Prefer fine-tuning pre-trained models to reduce compute and energy."
-        return example_after, note
- # ---------- JAVASCRIPT / NODE ----------
     if rule == "GLNET001":
-        example_after = dedent('''\
-// After (batch with Promise.all; or limit concurrency with p-limit)
+        after = dedent("""\
+// After (batch with Promise.all; or limit concurrency)
 await Promise.all(urls.map(u => fetch(u)));
 
-// Or with controlled concurrency (no extra deps)
+// Or with controlled concurrency (no deps)
 const concurrency = 8;
 let i = 0;
 const workers = Array.from({length: concurrency}, async () => {
@@ -214,81 +145,292 @@ const workers = Array.from({length: concurrency}, async () => {
   }
 });
 await Promise.all(workers);
-        ''')
-        note = "Avoid sequential network calls inside loops; batch or limit concurrency to cut wall-time/CPU."
-        return example_after, note
+""")
+        note = "Avoid sequential network calls inside loops; batch or apply a small concurrency limit."
+        return after, note
 
     if rule == "GLWEB001":
-        example_after = dedent('''\
+        after = dedent("""\
 // After (enable compression for Express)
 const compression = require('compression');
-app.use(compression());  // consider Brotli in reverse proxy/CDN too
-        ''')
-        note = "Enable gzip/Brotli so large responses transfer fewer bytes and save energy."
-        return example_after, note
+app.use(compression()); // Consider gzip/Brotli at CDN/proxy, too
+""")
+        note = "Enable gzip/Brotli so large responses transfer fewer bytes."
+        return after, note
 
     if rule == "GLWEB002":
-        example_after = dedent('''\
+        after = dedent("""\
 // After (cache headers for static assets)
 app.use(express.static('public', {
-  maxAge: '1d',      // tune for your content
+  maxAge: '1d',
   etag: true
 }));
-        ''')
-        note = "Set Cache-Control/ETag on static files to reduce repeat transfers."
-        return example_after, note
+""")
+        note = "Add Cache-Control/ETag to static files to reduce repeat downloads."
+        return after, note
 
-    # ---------- CONTAINER / DOCKER ----------
+    if rule == "GLWEB004":
+        after = dedent("""\
+// After (long-term caching for versioned assets)
+app.use(express.static(app.get('appPath'), {
+  maxAge: '7d',     // tune for your release cadence
+  etag: true,
+  immutable: true
+}));
+""")
+        note = "Use maxAge/immutable for hashed assets to maximize cache hits."
+        return after, note
+
+    if rule == "GLTPL001":
+        after = dedent("""\
+// After (disable template watch/cache-bypass in production)
+const isProd = process.env.NODE_ENV === 'production';
+nunjucks(app, {
+  autoescape: true,
+  watch: !isProd,
+  noCache: !isProd,
+  filters,
+  loader: njk.FileSystemLoader,
+});
+""")
+        note = "Disable template watching and cache bypass in production to avoid extra filesystem work."
+        return after, note
+
+    if rule == "GLREQ001":
+        after = dedent("""\
+// After (limit JSON body size)
+app.use(bodyParser.json({ limit: '1mb' }));
+app.use(bodyParser.urlencoded({ extended: true, limit: '1mb' }));
+""")
+        note = "Set sane payload limits to reduce CPU/memory spikes from large requests."
+        return after, note
+
+    if rule == "GLSESS001":
+        after = dedent("""\
+// After (use a proper session store)
+const session = require('express-session');
+const { createClient } = require('redis');
+const RedisStore = require('connect-redis').default;
+const redisClient = createClient({ url: process.env.REDIS_URL });
+await redisClient.connect();
+app.use(session({
+  store: new RedisStore({ client: redisClient }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  cookie: { sameSite: 'lax', secure: process.env.NODE_ENV === 'production' }
+}));
+""")
+        note = "Avoid MemoryStore in production; use Redis (or another external store)."
+        return after, note
+
+    if rule == "GLLOG001":
+        after = dedent("""\
+// After (leveled logging instead of console.log)
+const pino = require('pino');
+const logger = pino({ level: process.env.LOG_LEVEL || 'info' });
+// logger.debug('details', { id })
+logger.info('message');
+""")
+        note = "Use a leveled logger and set LOG_LEVEL in prod to avoid noisy IO."
+        return after, note
+
+    if rule == "GLCOOKIE001":
+        after = dedent("""\
+// After (guard JSON.parse on cookies)
+let objCookie = null;
+try {
+  objCookie = JSON.parse(cookie);
+} catch (e) {
+  objCookie = null;
+}
+""")
+        note = "Guard against malformed cookies to avoid exception-heavy code paths."
+        return after, note
+
+    if rule == "GLFS001":
+        after = dedent("""\
+// After (async fs in request path)
+const fsp = require('fs/promises');
+app.get('/route', async (req, res, next) => {
+  try {
+    const data = await fsp.readFile('file.txt', 'utf8');
+    res.send(data);
+  } catch (e) { next(e); }
+});
+""")
+        note = "Replace sync fs calls in routes with fs/promises to avoid blocking the event loop."
+        return after, note
+
+    if rule == "GLNET002":
+        after = dedent("""\
+// After (wrap map(async ...) with Promise.all or p-limit)
+const results = await Promise.all(items.map(async (x) => {
+  return doAsync(x);
+}));
+""")
+        note = "Ensure you await Promise.all when using map(async …) to avoid unbounded/dangling concurrency."
+        return after, note
+
+    if rule == "GLHTTP002":
+        after = dedent("""\
+// After (HTTP keep-alive agents)
+const http = require('http');
+const https = require('https');
+const axios = require('axios');
+
+const httpAgent = new http.Agent({ keepAlive: true });
+const httpsAgent = new https.Agent({ keepAlive: true });
+
+const client = axios.create({ httpAgent, httpsAgent });
+const { data } = await client.get('https://example.com');
+""")
+        note = "Enable keep-alive so connections are reused and TCP/TLS handshakes are reduced."
+        return after, note
+
+    if rule == "GLHTTP003":
+        after = dedent("""\
+// After (timeouts / AbortController)
+const controller = new AbortController();
+const id = setTimeout(() => controller.abort(), 10000); // 10s
+
+const res = await fetch(url, { signal: controller.signal });
+clearTimeout(id);
+
+// Axios example:
+// const client = axios.create({ timeout: 10000 });
+""")
+        note = "Set request timeouts (or AbortController) to prevent hung sockets from wasting resources."
+        return after, note
+
+    if rule == "GLAPI001":
+        after = dedent("""\
+// After (explicit Cache-Control on cacheable GET)
+app.get('/v1/data', (req, res) => {
+  res.set('Cache-Control', 'public, max-age=60'); // tune policy
+  res.json({ ok: true });
+});
+""")
+        note = "For cacheable endpoints, set Cache-Control to reduce repeat processing."
+        return after, note
+
+    if rule == "GLCPU001":
+        after = dedent("""\
+// After (avoid JSON stringify/parse inside hot loops)
+const payload = JSON.stringify(obj);   // do once outside
+for (const item of items) {
+  // use 'payload' instead of re-stringifying each iteration
+}
+""")
+        note = "Hoist expensive (de)serialization outside the loop."
+        return after, note
+
+    if rule == "GLTIMER001":
+        after = dedent("""\
+// After (less aggressive timer)
+const intervalMs = 250; // was < 50ms
+const id = setInterval(doWork, intervalMs);
+// Or debounce the work on demand
+""")
+        note = "Avoid sub-50ms intervals; use a slower cadence or debounce."
+        return after, note
+
+    if rule == "GLWEB003":
+        after = dedent("""\
+// After (tree-shakeable per-method imports)
+// Before: import _ from 'lodash'
+import debounce from 'lodash/debounce';
+import isEqual from 'lodash/isEqual';
+""")
+        note = "Import only the methods you use (lodash/date-fns/ramda) to shrink bundles."
+        return after, note
+
+    if rule == "GLIMG001":
+        after = dedent("""\
+<!-- After (lazy-loading images) -->
+<img src="/images/photo.jpg" loading="lazy" alt="..." width="800" height="600">
+""")
+        note = "Lazy-load offscreen images to avoid unnecessary network/CPU."
+        return after, note
+
+    if rule == "GLIMG002":
+        after = dedent("""\
+<!-- After (reserve image space to reduce layout shifts) -->
+<img src="/images/photo.jpg" width="800" height="600" alt="...">
+""")
+        note = "Specify width/height so the browser can allocate space without reflows."
+        return after, note
+
+    if rule == "GLEV T001" or rule == "GLEVT001":  # tolerate spacing variant
+        after = dedent("""\
+// After (debounce/throttle high-frequency events)
+const onScroll = throttle(() => {
+  // work
+}, 100); // or debounce(..., 100)
+
+window.addEventListener('scroll', onScroll);
+""")
+        note = "Throttle/debounce scroll/resize/mousemove handlers to avoid excessive reflows."
+        return after, note
+
+    # ---------------------------- DOCKER / CT ----------------------------
+
     if rule == "CT001":
-        example_after = dedent('''\
-# After (use minimal base)
+        after = dedent("""\
+# After (prefer minimal base)
 FROM node:20-alpine AS build
 WORKDIR /app
 COPY package*.json ./
-RUN npm ci --only=production
+RUN npm ci
 COPY . .
 RUN npm run build
-        ''')
-        note = "Use alpine/distroless to shrink images and reduce network/storage costs."
-        return example_after, note
+""")
+        note = "Use alpine/distroless to shrink images and reduce transfer/storage."
+        return after, note
 
     if rule == "CT002":
-        example_after = dedent('''\
+        after = dedent("""\
 # After (drop root)
-# ... build stage ...
 FROM node:20-alpine
 WORKDIR /app
 COPY --from=build /app ./
 RUN addgroup -S app && adduser -S app -G app
 USER app
 CMD ["node", "server.js"]
-        ''')
-        note = "Run as non-root for security and best practice."
-        return example_after, note
+""")
+        note = "Run as non-root for least privilege."
+        return after, note
 
     if rule == "CT003":
-        example_after = dedent('''\
-# After (reproducible, faster installs)
+        after = dedent("""\
+# After (reproducible installs)
 COPY package*.json ./
 RUN npm ci --only=production
-        ''')
-        note = "Use `npm ci` for deterministic, cache-friendly builds."
-        return example_after, note
+""")
+        note = "Prefer `npm ci` for deterministic, cache-friendly installs."
+        return after, note
 
     if rule == "CT004":
-        example_after = dedent('''\
-# After (do not COPY . blindly)
-# Ensure .dockerignore excludes node_modules, tests, docs, etc.
+        after = dedent("""\
+# After (copy only what you need; maintain .dockerignore)
 COPY package*.json ./
 RUN npm ci --only=production
 COPY src ./src
 COPY public ./public
-        ''')
-        note = "Reduce context size; copy only what you need, and maintain a .dockerignore."
-        return example_after, note
+""")
+        note = "Reduce context size; avoid COPY . unless necessary."
+        return after, note
+
+    if rule == "CT006":
+        after = dedent("""\
+# After (avoid recommended deps)
+RUN apt-get update && apt-get install --no-install-recommends -y curl ca-certificates && rm -rf /var/lib/apt/lists/*
+""")
+        note = "Use --no-install-recommends to keep the image lean."
+        return after, note
 
     if rule == "CT005":
-        example_after = dedent('''\
+        after = dedent("""\
 # After (multi-stage build)
 FROM node:20-alpine AS build
 WORKDIR /app
@@ -304,22 +446,25 @@ COPY package*.json ./
 RUN npm ci --omit=dev
 USER node
 CMD ["node","dist/server.js"]
-        ''')
-        note = "Use multi-stage builds to ship only runtime artifacts and shrink images."
-        return example_after, note
+""")
+        note = "Multi-stage builds ship only runtime artifacts and shrink images."
+        return after, note
 
-    # ---------- AI helpers you added ----------
-    if rule == "AI002":
-        example_after = dedent('''\
-# After (transfer learning)
-from transformers import AutoModelForSequenceClassification
-model = AutoModelForSequenceClassification.from_pretrained("distilbert-base-uncased", num_labels=2)
-        ''')
-        note = "Prefer fine-tuning pre-trained models over training from scratch."
-        return example_after, note
+    if rule == "CT009":
+        after = dedent("""\
+# After (declare non-root USER in final stage)
+RUN addgroup -S app && adduser -S app -G app
+USER app
+""")
+        note = "Containers run as root by default; add an explicit non-root user."
+        return after, note
 
-    # Fallback
-    return None, "No auto-fix heuristic available for this rule; see project guidance."
+    if rule == "CT000":
+        return None, "The Dockerfile couldn’t be parsed; open it to fix syntax and re-run the scan."
+
+    # ----------------------------- Fallback ------------------------------
+    return None, "No auto-fix heuristic for this rule yet. Check project guidance or open a PR to add one here."
+
 
 # UI: pick a row from the filtered table above
 # Ensure 'filtered' is always defined
