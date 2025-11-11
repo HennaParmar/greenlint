@@ -132,3 +132,130 @@ Technical Graduate – Government & Justice, CGI
 📧 henna.parmar@cgi.com
  📍 London Office
 🔗 github.com/HennaParmar/greenlint
+
+Overview
+GreenLint is a rule-based static analysis tool that detects code patterns known to waste energy, bandwidth, or compute resources — and then estimates their sustainability impact.
+It doesn’t run or execute your code (so it’s safe and fast); instead, it reads source files as text and applies a library of heuristics (regular expressions and small logic checks) to find inefficiencies.
+
+🧩 The Core Scanning Engine
+When you run:
+
+node greenlint-js-scan.js
+GreenLint performs these steps:
+1️⃣ Walk the project tree
+It recursively reads files under your defined folders (client/, server/), skipping things like node_modules, .git, dist, etc.
+
+const entries = fs.readdirSync(dir, { withFileTypes: true });
+for (const e of entries) {
+  const p = path.join(dir, e.name);
+  if (e.isDirectory()) walk(p);
+  else if (/\.(js|mjs|cjs)$/i.test(e.name)) scanJs(p);
+}
+2️⃣ Parse each file as text
+For every .js, .mjs, or .cjs file, it:
+	• reads the content into a string,
+	• splits it into lines,
+	• checks each line (and sometimes its neighbours) for rule matches.
+3️⃣ Apply heuristic rules
+Each rule is a small self-contained pattern detector.
+For example:
+🕸️ GLNET001 — Network call inside a loop
+
+const netRegex = /\b(fetch|axios|request)\b/i;
+if (/\b(for|while)\b/.test(lines[i])) {
+  if (netRegex.test(nextLines) && (/await|\.then/.test(nextLines))) {
+    addFinding(file, j+1, "GLNET001",
+      "Network call inside loop; prefer batching (Promise.all).");
+  }
+}
+This detects code that repeatedly calls APIs inside loops — a wasteful pattern in both CPU and network energy terms.
+🌐 GLWEB001 — Missing compression middleware
+
+const usesExpress = /\brequire\(['"]express['"]\)/.test(text);
+const hasCompression = /\brequire\(['"]compression['"]\)/.test(text);
+if (usesExpress && !hasCompression) {
+  addFinding(file, line, "GLWEB001",
+    "Express app missing compression middleware (gzip/Brotli).");
+}
+It simply checks if your Express app uses express() but never imports or configures compression.
+🧱 CT001 — Docker base image not minimal
+In greenlint-docker-check.js:
+
+if (/^FROM\s+node:(?!.*alpine)/i.test(line)) {
+  add("CT001", i+1, "Base image not alpine/minimal; prefer node:alpine.");
+}
+That rule spots Dockerfiles based on heavyweight images.
+
+📦 What each scanner produces
+Each scanner builds a JSON report like this:
+
+{
+  "summary": { "total_findings": 42 },
+  "findings": [
+    {
+      "file": "client/config/express.js",
+      "line": 10,
+      "rule": "GLWEB001",
+      "message": "Express app missing compression middleware.",
+      "severity": "LOW"
+    }
+  ]
+}
+Then the merge script (greenlint-merge.js) combines:
+	• greenlint_js.json
+	• greenlint_docker.json
+into:
+
+greenlint_report.json
+and tags each finding with the project name (juror-public, juror-api, etc.).
+Finally, your all-project script (greenlint-scan-all.js) merges everything into:
+
+reports/greenlint_all_projects.json
+
+🧠 How “testing” and “checking” actually work
+Each rule is like a mini-test, but instead of executing functions, it tests the code structure against known efficiency bad smells.
+Example mapping:
+Test Question	What GreenLint Checks	Why it matters
+Does code compress HTTP responses?	looks for app.use(compression())	reduces data transfer energy
+Are network requests batched?	looks for fetch() inside loops	avoids repeated connections
+Are static assets cached?	finds express.static() without options	prevents redundant downloads
+Are Docker images minimal?	checks for node:alpine base image	reduces build size and storage
+Are templates cached in prod?	finds nunjucks({ watch: true })	prevents repeated I/O
+Are console logs removed?	detects console.log() in app code	avoids unnecessary I/O and clutter
+Every match becomes a “finding” — essentially a test failure for sustainability.
+
+🧮 How the Carbon/Cost Estimates are Calculated
+Once the findings are uploaded into the dashboard, the carbon estimator section uses:
+	• Counts of each rule (e.g., 5 × GLWEB001, 3 × GLNET001)
+	• Heuristic efficiency factors (e.g., each GLWEB001 ≈ 0.4% potential CO₂e reduction)
+	• Baseline energy or carbon figure (entered by you)
+	• Grid intensity (gCO₂e/kWh) and £/kWh inputs
+Then:
+
+total_reduction = 1 - Π(1 - per_occurrence^count)
+saved_kgCO₂e    = baseline_kg * total_reduction
+saved_kWh       = (saved_kgCO₂e * 1000) / grid_intensity
+saved_cost      = saved_kWh * electricity_price
+
+This gives an estimated impact of applying GreenLint’s fixes — conceptually similar to Azure’s Carbon Optimization dashboard.
+
+🧩 Key Takeaways for Presentations
+	• Not AI — deterministic, explainable pattern matching.
+	• No execution — static text scanning.
+	• Lightweight — runs fast, no dependencies or cloud APIs.
+	• Explainable — every rule is visible in the code and dashboard.
+	• Extendable — you can add new rules easily (just one if block).
+	• Measurable — findings can be converted into energy and CO₂e savings estimates.
+
+🔧 Example developer workflow
+	1. Developer runs:
+
+node greenlint-js-scan.js
+	2. GreenLint finds:
+
+GLWEB001  Express missing compression (client/config/express.js:10)
+GLNET001  Network call in loop (client/utils/api.js:45)
+	3. Developer fixes these issues.
+	4. Re-run scanner — zero findings ✅
+	5. Dashboard recalculates lower projected CO₂e footprint 🌍
+<img width="925" height="3161" alt="image" src="https://github.com/user-attachments/assets/a7eedca2-d15b-4149-94a1-c90fa6576a81" />
