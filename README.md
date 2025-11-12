@@ -231,7 +231,7 @@ saved_cost      = saved_kWh * electricity_price
 
 This gives an estimated impact of applying GreenLint’s fixes — conceptually similar to Azure’s Carbon Optimization dashboard.
 
-🧩 Key Takeaways for Presentations
+🧩 Key Takeaways 
 	• Not AI — deterministic, explainable pattern matching.
 	• No execution — static text scanning.
 	• Lightweight — runs fast, no dependencies or cloud APIs.
