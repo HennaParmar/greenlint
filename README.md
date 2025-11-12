@@ -5,9 +5,7 @@ Developed at CGI by Henna Parmar
 GreenLint helps developers identify energy-intensive or inefficient code patterns and provides actionable guidance for writing greener, more efficient software.
 It aligns with the CGI Green Software Guide principles of measurement, optimisation, and carbon-aware engineering
 
-green_software_guide
 
-.
 
 🧩 What GreenLint Does
 
@@ -29,16 +27,10 @@ Web	GLWEB001 – Missing compression middleware	Reduces transfer size and energy
 Containers	CT001–CT006 – Docker best practices	Promotes minimal images and non-root builds.
 Data & Assets	IMG001 / APIJSON001	Flags large images or JSON payloads to align with the guide’s storage-optimisation principle
 
-green_software_guide
-
 .
 🧠 How It Aligns With the CGI Green Software Guide
 Guide Principle	GreenLint Feature
 1. Measurement	Establishes a sustainability baseline via rule counts & trend dashboard
-
-green_software_guide
-
-.
 2. Efficient Use of Hardware	Encourages reuse and optimisation of compute and memory resources.
 3. Storage Optimisation	Detects large or redundant data assets and uncompressed media.
 4. Carbon-Aware Engineering	Plans CI/CD execution during low-carbon periods (future roadmap).
@@ -258,4 +250,3 @@ GLNET001  Network call in loop (client/utils/api.js:45)
 	3. Developer fixes these issues.
 	4. Re-run scanner — zero findings ✅
 	5. Dashboard recalculates lower projected CO₂e footprint 🌍
-<img width="925" height="3161" alt="image" src="https://github.com/user-attachments/assets/a7eedca2-d15b-4149-94a1-c90fa6576a81" />
